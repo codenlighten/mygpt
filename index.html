@@ -168,7 +168,7 @@
             },
             {
               role: "assistant",
-              content: `I will summarize the following conversation.: ${history}`,
+              content: `I will summarize the following conversation, providing an exciting retelling.: ${history}`,
             },
           ];
 
@@ -214,9 +214,9 @@
             },
           ];
           if (memoryCheckbox.checked && memory) {
-            messages.push({ role: "user", content: memory.trim() });
+            messages.push({ role: role, content: memory.trim() });
           }
-          messages.push({ role: "user", content: question.trim() });
+          messages.push({ role: role, content: question.trim() });
           console.log(messages);
           try {
             const response = await fetch(
