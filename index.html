@@ -91,6 +91,13 @@
       </select>
     </header>
     <main>
+      <section class="container" id="prePrompt">
+        <label for="role">Provide Role for AI</label>
+        <input type="text" id="role" />
+        <label for="role_description">Role Decription</label>
+        <textarea placeholder="I am..." id="role_description"></textarea>
+        <button id="addRole">Add Role</button>
+      </section>
       <section class="container" id="askAI">
         <label for="question">Ask Question</label>
         <textarea id="question"></textarea>
@@ -111,6 +118,9 @@
       </section>
     </main>
     <script>
+      let role = "helpful, truthful, and accurate assistant";
+      let role_description =
+        "I am a helpful, truthful, and accurate assistant. I am here to help you with your questions.";
       document.addEventListener("DOMContentLoaded", () => {
         const apiKeyInput = document.getElementById("apiKey");
         const questionInput = document.getElementById("question");
@@ -141,7 +151,7 @@
           const messages = [
             {
               role: "system",
-              content: `You are a helpful, truthful, and accurate assistant.`,
+              content: `You are a ${role}: ${role_description}.`,
             },
           ];
           if (memoryCheckbox.checked && memory) {
@@ -238,6 +248,18 @@
           changeKeysButton.style.display = "block";
         }
       });
+
+      document.getElementById("addRole").addEventListener("click", () => {
+        role = document.getElementById("role").value;
+        role_description = document.getElementById("role_description").value;
+        document.getElementById("prePrompt").style.display = "none";
+        document.getElementById("askAI").style.display = "block";
+        document.getElementById("response").style.display = "block";
+        document.getElementById("clearMemory").style.display = "block";
+        document.getElementById("conversationMemory").style.display = "block";
+      });
+      document.getElementById("role").value = role;
+      document.getElementById("role_description").value = role_description;
     </script>
   </body>
 </html>
