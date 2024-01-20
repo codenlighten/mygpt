@@ -124,6 +124,10 @@
         <label for="conversation">Conversation Memory</label>
         <textarea id="conversation"></textarea>
       </section>
+      <section class="container" id="summaryDiv">
+        <label for="summary">Summary</label>
+        <textarea id="summary"></textarea>
+      </section>
     </main>
     <script>
       let role = "helpful, truthful, and accurate assistant";
@@ -142,6 +146,7 @@
         const clearMemoryButton = document.getElementById("clearMemoryButton");
 
         let memory = "";
+        let summary = "";
 
         function getApiKey() {
           return localStorage.getItem("apiKey");
@@ -153,6 +158,44 @@
           apiKeyInput.style.display = "none";
           saveButton.style.display = "none";
           changeKeysButton.style.display = "block";
+        }
+
+        async function summarize(history) {
+          const messages = [
+            {
+              role: "system",
+              content: `You are a helpful, truthful, and accurate assistant. Summarize the conversation so far.`,
+            },
+            {
+              role: "assistant",
+              content: `I will summarize the following conversation.: ${history}`,
+            },
+          ];
+
+          try {
+            const response = await fetch(
+              "https://api.openai.com/v1/chat/completions",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${getApiKey()}`,
+                },
+                body: JSON.stringify({
+                  model: model,
+                  messages: messages,
+                }),
+              }
+            );
+            if (!response.ok)
+              throw new Error(`HTTP error! status: ${response.status}`);
+            const data = await response.json();
+            summary = data.choices[0].message.content;
+            return data.choices[0].message.content; // Adjust based on actual API response
+          } catch (error) {
+            console.error("Error fetching answer:", error);
+            throw error; // Rethrow for handling outside
+          }
         }
 
         async function askGPT(question, model) {
@@ -189,6 +232,10 @@
             if (!response.ok)
               throw new Error(`HTTP error! status: ${response.status}`);
             const data = await response.json();
+            if (memory.length > 0) {
+              summary = await summarize(memory);
+              document.getElementById("summary").value = `Summary: ${summary}`;
+            }
             return data.choices[0].message.content; // Adjust based on actual API response
           } catch (error) {
             console.error("Error fetching answer:", error);
@@ -218,6 +265,7 @@
           try {
             const answer = await askGPT(question, model);
             updateUIAfterAsking(question, answer, !memoryCheckbox.checked);
+            questionInput.value = "";
           } catch (error) {
             answerTextarea.value = "An error occurred. Please try again later.";
             askButton.disabled = false;
@@ -242,7 +290,9 @@
 
         clearMemoryButton.addEventListener("click", () => {
           memory = "";
+          summary = "";
           conversationTextarea.value = "";
+          document.getElementById("summary").value = "";
           alert("Memory cleared");
         });
 
