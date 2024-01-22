@@ -130,7 +130,7 @@
       </section>
     </main>
     <script>
-      let role = "helpful, truthful, and accurate assistant";
+      let currentRole = "helpful, truthful, and accurate assistant";
       let role_description =
         "I am a helpful, truthful, and accurate assistant. I am here to help you with your questions.";
       document.addEventListener("DOMContentLoaded", () => {
@@ -171,6 +171,7 @@
               content: `I will summarize the following conversation, providing an exciting retelling.: ${history}`,
             },
           ];
+          console.log(messages);
 
           try {
             const response = await fetch(
@@ -187,6 +188,7 @@
                 }),
               }
             );
+            console.log(response);
             if (!response.ok)
               throw new Error(`HTTP error! status: ${response.status}`);
             const data = await response.json();
@@ -202,7 +204,7 @@
           const messages = [
             {
               role: "system",
-              content: `You are a ${role}, ${role_description}. Here is the question:  ${question}. ${
+              content: `You are a ${currentRole}, ${role_description}. Here is the question:  ${question}. ${
                 summary.length > 0
                   ? `Summary of the conversation so far: ${summary}`
                   : ""
@@ -210,9 +212,9 @@
             },
           ];
           if (memoryCheckbox.checked && memory) {
-            messages.push({ role: user, content: memory.trim() });
+            messages.push({ role: "user", content: memory.trim() });
           }
-          messages.push({ role: user, content: question.trim() });
+          messages.push({ role: "user", content: question.trim() });
           console.log(messages);
           try {
             const response = await fetch(
@@ -229,6 +231,7 @@
                 }),
               }
             );
+            console.log(response);
             if (!response.ok)
               throw new Error(`HTTP error! status: ${response.status}`);
             const data = await response.json();
@@ -264,6 +267,7 @@
           askButton.textContent = "Asking...";
           try {
             const answer = await askGPT(question, model);
+            console.log(answer);
             updateUIAfterAsking(question, answer, !memoryCheckbox.checked);
             questionInput.value = "";
           } catch (error) {
@@ -321,7 +325,7 @@
         document.getElementById("clearMemory").style.display = "block";
         document.getElementById("conversationMemory").style.display = "block";
       });
-      document.getElementById("role").value = role;
+      document.getElementById("role").value = currentRole;
       document.getElementById("role_description").value = role_description;
       document.getElementById("question").value = "";
       document.getElementById("answer").value = "";
