@@ -93,9 +93,8 @@
       <button id="changeKeys" style="display: none">Change ApiKeys</button>
       <label for="gptModel">Choose GPT Model</label>
       <select id="gptModel">
-        <option value="gpt-3.5-turbo">GPT 3.5</option>
-        <option value="gpt-4">GPT 4</option>
-        <option value="gpt-4-1106-preview">GPT 4-1106</option>
+        <option value="gpt-4o-mini">GPT-4o-mini</option>
+        <option value="gpt-4o">GPT 4o</option>
       </select>
     </header>
     <main>
@@ -259,7 +258,7 @@
 
         askButton.addEventListener("click", async () => {
           const question = questionInput.value;
-          const model = gptModelSelect.value || "gpt-3.5-turbo";
+          const model = gptModelSelect.value || "gpt-4o-mini";
           askButton.disabled = true;
           askButton.textContent = "Asking...";
           try {
